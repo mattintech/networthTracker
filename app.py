@@ -15,9 +15,9 @@ class Account(db.Model):
     type = db.Column(db.String(50), nullable=False)
     institution = db.Column(db.String(100), nullable=False)
     owner = db.Column(db.String(50), nullable=False)
-    line_color = db.Column(db.String(7), nullable=True)  # For hex color, e.g., #ff0000
-    background_color = db.Column(db.String(7), nullable=True)  # For hex color
-
+    account_number = db.Column(db.String(20), nullable=False)  # New field for account number
+    line_color = db.Column(db.String(7), nullable=True)
+    #background_color = db.Column(db.String(7), nullable=True)
 
 # Define the AccountValue model
 class AccountValue(db.Model):
@@ -50,7 +50,7 @@ def summary():
         "institution": account.institution,
         "owner": account.owner,
         "line_color": account.line_color,  # Include line color
-        "background_color": account.background_color  # Include background color
+        #"background_color": account.background_color  # Include background color
     } for account in accounts]
     
     account_values_data = [{
@@ -73,17 +73,17 @@ def add_account():
         type_ = request.form['type']
         institution = request.form['institution']
         owner = request.form['owner']
+        account_number = request.form['account_number']
         line_color = request.form['line_color']
-        background_color = request.form['background_color']
+        #background_color = request.form['background_color']
         
         new_account = Account(name=name, type=type_, institution=institution, owner=owner,
-                              line_color=line_color, background_color=background_color)
+                              account_number=account_number, line_color=line_color) #, background_color=background_color)
         db.session.add(new_account)
         db.session.commit()
         flash('Account added successfully')
         return redirect(url_for('summary'))
     return render_template('add_account.html')
-
 
 @app.route('/add_value', methods=['GET', 'POST'])
 def add_value():

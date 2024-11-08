@@ -6,9 +6,19 @@
     <label>Name: <input type="text" name="name" required></label><br>
     <label>Type: <input type="text" name="type" required></label><br>
     <label>Institution: <input type="text" name="institution" required></label><br>
-    <label>Owner: <input type="text" name="owner" required></label><br>
+    
+    <label>Owner:
+        <select name="owner" required>
+            <option value="Matt">Matt</option>
+            <option value="Alex">Alex</option>
+        </select>
+    </label><br>
+    
+    <label>Account Number: <input type="text" name="account_number" required></label><br>
+    
+    <!-- Single Color Picker -->
     <label>Line Color: <input type="color" name="line_color" value="#000000" required></label><br>
-    <label>Background Color: <input type="color" name="background_color" value="#cccccc" required></label><br>
+
     <button type="submit">Add Account</button>
 </form>
 {% endblock %}

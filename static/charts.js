@@ -4,7 +4,7 @@ function drawChart(accounts, accountValues) {
     // Extract unique dates as categories for x-axis labels
     const labels = [...new Set(accountValues.map(value => value.date))].sort();
 
-    // Create datasets for each account with specified colors
+    // Create datasets for each account, with translucent background based on line color
     const accountDatasets = accounts.map(account => {
         const data = labels.map(date => {
             const entry = accountValues.find(value => value.account_id === account.id && value.date === date);
@@ -14,8 +14,8 @@ function drawChart(accounts, accountValues) {
         return {
             label: account.name,
             data: data,
-            borderColor: account.line_color || 'rgba(75, 192, 192, 1)',  // Use specified line color or default
-            backgroundColor: hexToRGBA(account.background_color || '#cccccc'),  // Convert background color to RGBA
+            borderColor: account.line_color || 'rgba(75, 192, 192, 1)',  // Use line color
+            backgroundColor: hexToRGBA(account.line_color || '#cccccc', 0.2),  // Generate translucent background
             fill: true
         };
     });
