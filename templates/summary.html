@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Account Summary</h2>
+<canvas id="netWorthChart" width="400" height="400"></canvas>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='charts.js') }}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Pass data from Flask to JavaScript
+        const accounts = {{ accounts|tojson }};
+        const accountValues = {{ account_values|tojson }};
+        console.log("Accounts:", accounts);
+        console.log("Account Values:", accountValues);
+
+        // Call drawChart with dynamic data
+        drawChart(accounts, accountValues);
+    });
+</script>
+{% endblock %}
