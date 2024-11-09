@@ -45,7 +45,7 @@
 {% block scripts %}
 <script>
     function loadAccountValues() {
-        fetch('/get_account_values')
+        fetch('/values/get_account_values')
             .then(response => response.json())
             .then(data => {
                 const tableBody = document.getElementById('valuesTableBody');
@@ -89,22 +89,35 @@
     }
 
     function editValue(valueId, accountId, date, value) {
+        // Populate hidden fields for editing
         document.getElementById('account_value_id').value = valueId;
         document.getElementById('account_id_hidden').value = accountId;
+        
+        // Set the date in YYYY-MM-DD format
         document.getElementById('date').value = new Date(date).toISOString().slice(0, 10);
         document.getElementById('value').value = parseFloat(value.replace(/[^0-9.-]+/g, ""));
+        
+        // Debugging output to check if values are set correctly
+        console.log("Editing Mode - account_value_id:", valueId);
+        console.log("Editing Mode - account_id:", accountId);
+        
+        // Disable the account dropdown in edit mode
         document.getElementById('account_id').value = accountId;
         document.getElementById('account_id').disabled = true;
 
+        // Change button text to indicate edit mode
         document.getElementById('submit_button').textContent = 'Update Value';
     }
-    
     document.addEventListener('DOMContentLoaded', loadAccountValues);
 
     document.querySelector('form').addEventListener('submit', function(event) {
-        document.getElementById('account_value_id').value = '';
-        document.getElementById('account_id').disabled = false;
-        document.getElementById('submit_button').textContent = 'Add Value';
+        // Additional debug output on form submission
+        console.log("Form Submitted - account_value_id:", document.getElementById('account_value_id').value);
+        console.log("Form Submitted - account_id:", document.getElementById('account_id_hidden').value || document.getElementById('account_id').value);
+        console.log("Form Submitted - date:", document.getElementById('date').value);
+        console.log("Form Submitted - value:", document.getElementById('value').value);
+
+        document.getElementById('account_id').disabled = false;  // Re-enable the dropdown for future edits
     });
 </script>
 {% endblock %}
