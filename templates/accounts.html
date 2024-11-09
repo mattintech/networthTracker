@@ -21,6 +21,15 @@
     <label>Account Number: <input type="text" name="account_number" id="account_number" required></label><br>
     
     <label>Color: <input type="color" name="line_color" id="line_color" value="#FFFFFF" required></label><br>
+    
+    <label>Currency:
+        <select name="currency" id="currency" required>
+            <option value="CAD">CAD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <!-- Add additional currencies as needed -->
+        </select>
+    </label><br>
 
     <button type="submit" id="submit_button">Add Account</button>
 </form>
@@ -34,6 +43,7 @@
             <th>Institution</th>
             <th>Owner</th>
             <th>Account Number</th>
+            <th>Currency</th>
             <th>Color</th>
             <th>Actions</th>
         </tr>
@@ -46,10 +56,11 @@
                 <td>{{ account.institution }}</td>
                 <td>{{ account.owner }}</td>
                 <td>{{ account.account_number }}</td>
+                <td>{{ account.currency }}</td> <!-- Display currency -->
                 <td style="background-color: {{ account.line_color }};">{{ account.line_color }}</td>
                 <td>
                     <!-- Edit button to fill form with account data for inline editing -->
-                    <button type="button" onclick="editAccount({{ account.id }}, '{{ account.name }}', '{{ account.type }}', '{{ account.institution }}', '{{ account.owner }}', '{{ account.account_number }}', '{{ account.line_color }}')">Edit</button>
+                    <button type="button" onclick="editAccount({{ account.id }}, '{{ account.name }}', '{{ account.type }}', '{{ account.institution }}', '{{ account.owner }}', '{{ account.account_number }}', '{{ account.line_color }}', '{{ account.currency }}')">Edit</button>
                 </td>
             </tr>
         {% endfor %}
@@ -60,7 +71,7 @@
 
 {% block scripts %}
 <script>
-    function editAccount(id, name, type, institution, owner, accountNumber, lineColor) {
+    function editAccount(id, name, type, institution, owner, accountNumber, lineColor, currency) {
         // Fill the form with the account's current details
         document.getElementById('account_id').value = id;
         document.getElementById('name').value = name;
@@ -69,6 +80,7 @@
         document.getElementById('owner').value = owner;
         document.getElementById('account_number').value = accountNumber;
         document.getElementById('line_color').value = lineColor;
+        document.getElementById('currency').value = currency; // Set currency
 
         // Change the submit button text to indicate edit mode
         document.getElementById('submit_button').textContent = 'Update Account';

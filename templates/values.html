@@ -6,12 +6,14 @@
 <!-- Form to add or update value -->
 <form method="post">
     <input type="hidden" name="account_value_id" id="account_value_id" value="">
-    <input type="hidden" name="account_id_hidden" id="account_id_hidden" value=""> <!-- New hidden field -->
+    <input type="hidden" name="account_id_hidden" id="account_id_hidden" value="">
 
     <label>Account:
         <select name="account_id" id="account_id" required>
             {% for account in accounts %}
-                <option value="{{ account.id }}">{{ account.name }}</option>
+                <option value="{{ account.id }}">
+                    {{ account.name }} - {{ account.owner }} ({{ account.account_number[-4:] }})
+                </option>
             {% endfor %}
         </select>
     </label><br>
@@ -25,8 +27,7 @@
 <table border="1" id="valuesTable">
     <thead>
         <tr>
-            <th>Account Name</th>
-            <th>Account Number</th>
+            <th>Account (Owner & Last 4)</th>
             <th>Institution</th>
             <th>Owner</th>
             <th>Value</th>
@@ -43,93 +44,67 @@
 
 {% block scripts %}
 <script>
-   function loadAccountValues() {
-    fetch('/get_account_values')
-        .then(response => response.json())
-        .then(data => {
-            const tableBody = document.getElementById('valuesTableBody');
-            tableBody.innerHTML = '';  // Clear existing rows
-            
-            data.forEach(item => {
-                const row = document.createElement('tr');
+    function loadAccountValues() {
+        fetch('/get_account_values')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('valuesTableBody');
+                tableBody.innerHTML = '';  // Clear existing rows
                 
-                const accountNameCell = document.createElement('td');
-                accountNameCell.textContent = item.account_name;
-                row.appendChild(accountNameCell);
-                
-                const accountNumberCell = document.createElement('td');
-                accountNumberCell.textContent = item.account_number;
-                row.appendChild(accountNumberCell);
-                
-                const institutionCell = document.createElement('td');
-                institutionCell.textContent = item.institution;
-                row.appendChild(institutionCell);
-                
-                const ownerCell = document.createElement('td');
-                ownerCell.textContent = item.owner;
-                row.appendChild(ownerCell);
-                
-                const valueCell = document.createElement('td');
-                valueCell.textContent = item.value;
-                row.appendChild(valueCell);
-                
-                const dateCell = document.createElement('td');
-                dateCell.textContent = new Date(item.date).toLocaleDateString();
-                row.appendChild(dateCell);
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    
+                    const accountCell = document.createElement('td');
+                    accountCell.textContent = `${item.account_name} - ${item.owner} (${item.account_number.slice(-4)})`;
+                    row.appendChild(accountCell);
+                    
+                    const institutionCell = document.createElement('td');
+                    institutionCell.textContent = item.institution;
+                    row.appendChild(institutionCell);
+                    
+                    const ownerCell = document.createElement('td');
+                    ownerCell.textContent = item.owner;
+                    row.appendChild(ownerCell);
+                    
+                    const valueCell = document.createElement('td');
+                    valueCell.textContent = item.value;
+                    row.appendChild(valueCell);
+                    
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = new Date(item.date).toLocaleDateString();
+                    row.appendChild(dateCell);
 
-                const actionCell = document.createElement('td');
-                const editButton = document.createElement('button');
-                editButton.textContent = 'Edit';
-                editButton.onclick = function() {
-                    // Ensure the correct values are passed
-                    editValue(item.id, item.account_id, item.date, item.value);
-                };
-                actionCell.appendChild(editButton);
-                row.appendChild(actionCell);
-                
-                tableBody.appendChild(row);
+                    const actionCell = document.createElement('td');
+                    const editButton = document.createElement('button');
+                    editButton.textContent = 'Edit';
+                    editButton.onclick = function() {
+                        editValue(item.id, item.account_id, item.date, item.value);
+                    };
+                    actionCell.appendChild(editButton);
+                    row.appendChild(actionCell);
+                    
+                    tableBody.appendChild(row);
+                });
             });
-        });
-}
-
+    }
 
     function editValue(valueId, accountId, date, value) {
-    // Populate hidden fields for editing
-    document.getElementById('account_value_id').value = valueId;
-    document.getElementById('account_id_hidden').value = accountId;
-    
-    // Set the date in YYYY-MM-DD format
-    const formattedDate = new Date(date).toISOString().slice(0, 10);
-    document.getElementById('date').value = formattedDate;
-    
-    // Set value, removing any non-numeric characters
-    document.getElementById('value').value = parseFloat(value.replace(/[^0-9.-]+/g, ""));
+        document.getElementById('account_value_id').value = valueId;
+        document.getElementById('account_id_hidden').value = accountId;
+        document.getElementById('date').value = new Date(date).toISOString().slice(0, 10);
+        document.getElementById('value').value = parseFloat(value.replace(/[^0-9.-]+/g, ""));
+        document.getElementById('account_id').value = accountId;
+        document.getElementById('account_id').disabled = true;
 
-    // Disable the account dropdown in edit mode
-    document.getElementById('account_id').disabled = true;
-
-    // Change button text to indicate edit mode
-    document.getElementById('submit_button').textContent = 'Update Value';
-
-    // Console log to verify values
-    console.log("Edit Mode - account_value_id:", valueId);
-    console.log("Edit Mode - account_id_hidden:", accountId);
-    console.log("Edit Mode - date:", formattedDate);
-    console.log("Edit Mode - value:", value);
-}
-
-
+        document.getElementById('submit_button').textContent = 'Update Value';
+    }
     
     document.addEventListener('DOMContentLoaded', loadAccountValues);
 
-    // Reset form to add mode after submission or when adding a new entry
     document.querySelector('form').addEventListener('submit', function(event) {
-    console.log("Submitting form data:");
-    console.log("account_value_id:", document.getElementById('account_value_id').value);
-    console.log("account_id_hidden:", document.getElementById('account_id_hidden').value);
-    console.log("date:", document.getElementById('date').value);
-    console.log("value:", document.getElementById('value').value);
-});
-
+        document.getElementById('account_value_id').value = '';
+        document.getElementById('account_id').disabled = false;
+        document.getElementById('submit_button').textContent = 'Add Value';
+    });
 </script>
 {% endblock %}

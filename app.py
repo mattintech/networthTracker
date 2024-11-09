@@ -18,7 +18,11 @@ class Account(db.Model):
     owner = db.Column(db.String(50), nullable=False)
     account_number = db.Column(db.String(20), nullable=False)
     line_color = db.Column(db.String(7), nullable=True)
+    currency = db.Column(db.String(3), nullable=False, default='USD')  # New currency field
+    
+    # Define relationship to AccountValue
     values = db.relationship('AccountValue', backref='account', lazy=True)
+
 
 class AccountValue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -109,6 +113,7 @@ def summary():
 def accounts():
     if request.method == 'POST':
         account_id = request.form.get('account_id')
+        currency = request.form['currency']  # Get the currency from the form
         if account_id:
             account = Account.query.get(account_id)
             if account:
@@ -118,6 +123,7 @@ def accounts():
                 account.owner = request.form['owner']
                 account.account_number = request.form['account_number']
                 account.line_color = request.form['line_color']
+                account.currency = currency
                 db.session.commit()
                 flash('Account updated successfully')
         else:
@@ -127,7 +133,8 @@ def accounts():
                 institution=request.form['institution'],
                 owner=request.form['owner'],
                 account_number=request.form['account_number'],
-                line_color=request.form['line_color']
+                line_color=request.form['line_color'],
+                currency=currency  # Add the currency when creating a new account
             )
             db.session.add(new_account)
             db.session.commit()
@@ -184,4 +191,4 @@ def get_account_values():
     return jsonify(account_values_data)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=8080)

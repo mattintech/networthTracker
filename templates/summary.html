@@ -1,7 +1,6 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>Account Summary</h2>
 
 {% if net_worth_change > 0 %}
     <p style="color: green; font-weight: bold;">📈 Net Worth is up by ${{ "{:,.2f}".format(net_worth_change) }} from last month!</p>
