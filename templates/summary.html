@@ -2,6 +2,15 @@
 
 {% block content %}
 <h2>Account Summary</h2>
+
+{% if net_worth_change > 0 %}
+    <p style="color: green; font-weight: bold;">📈 Net Worth is up by ${{ "{:,.2f}".format(net_worth_change) }} from last month!</p>
+{% elif net_worth_change < 0 %}
+    <p style="color: red; font-weight: bold;">📉 Net Worth is down by ${{ "{:,.2f}".format(abs(net_worth_change)) }} from last month.</p>
+{% else %}
+    <p style="color: gray; font-weight: bold;">No change in Net Worth from last month.</p>
+{% endif %}
+
 <canvas id="netWorthChart" width="400" height="400"></canvas>
 {% endblock %}
 
