@@ -20,7 +20,6 @@ class Account(db.Model):
     line_color = db.Column(db.String(7), nullable=True)
     values = db.relationship('AccountValue', backref='account', lazy=True)
 
-# Define the AccountValue model
 class AccountValue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
@@ -28,38 +27,42 @@ class AccountValue(db.Model):
     value = db.Column(db.Float, nullable=False)
     __table_args__ = (db.UniqueConstraint('account_id', 'date', name='unique_account_month'),)
 
-# Initialize the database
 with app.app_context():
     db.create_all()
 
-def calculate_net_worth_change():
+# Context processor to calculate total net worth and change
+@app.context_processor
+def inject_net_worth():
     account_values = AccountValue.query.order_by(AccountValue.date).all()
     unique_dates = sorted({value.date for value in account_values})
     accounts = Account.query.all()
     
+    # Carry-forward logic for each account's values
     account_data = {account.id: {} for account in accounts}
-    
-    # Populate account_data with carry-forward logic
     for account in accounts:
-        last_value = 0  # Start with 0 if there's no prior value
+        last_value = 0
         for date in unique_dates:
             recorded_value = next((v.value for v in account_values if v.account_id == account.id and v.date == date), None)
             if recorded_value is not None:
-                last_value = recorded_value  # Update last known value if there's a recorded value
-            account_data[account.id][date] = last_value  # Carry forward the last known value
+                last_value = recorded_value
+            account_data[account.id][date] = last_value
 
-    # Calculate net worth for each date
-    monthly_net_worth = {date: sum(account_data[account.id][date] for account in accounts) for date in unique_dates}
+    # Calculate total net worth as the sum of each account's latest known value
+    total_net_worth = sum(account_data[account.id][unique_dates[-1]] for account in accounts if unique_dates) if unique_dates else 0
 
-    # Determine the change in net worth between the last two months
+    # Calculate net worth change between the last two dates
     net_worth_change = 0
-    sorted_dates = sorted(monthly_net_worth.keys())
-    if len(sorted_dates) > 1:
-        last_month = sorted_dates[-1]
-        previous_month = sorted_dates[-2]
-        net_worth_change = monthly_net_worth[last_month] - monthly_net_worth[previous_month]
+    if len(unique_dates) > 1:
+        last_month = unique_dates[-1]
+        previous_month = unique_dates[-2]
+        last_month_net_worth = sum(account_data[account.id][last_month] for account in accounts)
+        previous_month_net_worth = sum(account_data[account.id][previous_month] for account in accounts)
+        net_worth_change = last_month_net_worth - previous_month_net_worth
 
-    return net_worth_change
+    return {
+        'total_net_worth': total_net_worth,
+        'net_worth_change': net_worth_change
+    }
 
 @app.route('/')
 def index():
@@ -67,7 +70,6 @@ def index():
 
 @app.route('/summary')
 def summary():
-    net_worth_change = calculate_net_worth_change()
     accounts = Account.query.all()
     
     # Prepare accounts data as dictionaries for JSON serialization
@@ -79,22 +81,19 @@ def summary():
         "owner": account.owner,
         "line_color": account.line_color,
     } for account in accounts]
-    
+
     account_values = AccountValue.query.order_by(AccountValue.date).all()
     unique_dates = sorted({value.date for value in account_values})
-    
+
     account_data = {account.id: {} for account in accounts}
-    
-    # Carry-forward logic for each account's values across dates
     for account in accounts:
-        last_value = 0  # Default to 0 if no previous value
+        last_value = 0
         for date in unique_dates:
             recorded_value = next((v.value for v in account_values if v.account_id == account.id and v.date == date), None)
             if recorded_value is not None:
-                last_value = recorded_value  # Update last known value
-            account_data[account.id][date] = last_value  # Carry forward the last known value
+                last_value = recorded_value
+            account_data[account.id][date] = last_value
 
-    # Prepare account values for the template
     account_values_data = []
     for account_id, values in account_data.items():
         for date, value in values.items():
@@ -104,16 +103,10 @@ def summary():
                 "value": value
             })
 
-    return render_template('summary.html', 
-                           net_worth_change=net_worth_change, 
-                           accounts=accounts_data, 
-                           account_values=account_values_data)
-
+    return render_template('summary.html', accounts=accounts_data, account_values=account_values_data)
 
 @app.route('/accounts', methods=['GET', 'POST'])
 def accounts():
-    net_worth_change = calculate_net_worth_change()
-    
     if request.method == 'POST':
         account_id = request.form.get('account_id')
         if account_id:
@@ -142,11 +135,10 @@ def accounts():
         return redirect(url_for('accounts'))
 
     accounts = Account.query.all()
-    return render_template('accounts.html', accounts=accounts, net_worth_change=net_worth_change)
+    return render_template('accounts.html', accounts=accounts)
 
 @app.route('/values', methods=['GET', 'POST'])
 def values():
-    net_worth_change = calculate_net_worth_change()
     accounts = Account.query.all()
     
     if request.method == 'POST':
@@ -173,7 +165,7 @@ def values():
                 flash('Value added successfully')
         return redirect(url_for('values'))
 
-    return render_template('values.html', accounts=accounts, net_worth_change=net_worth_change)
+    return render_template('values.html', accounts=accounts)
 
 @app.route('/get_account_values')
 def get_account_values():

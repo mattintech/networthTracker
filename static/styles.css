@@ -184,3 +184,15 @@ footer p {
     margin: 0;
     font-size: 1em;
 }
+
+/* Net Worth Styling */
+.total-net-worth {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.net-worth-change {
+    font-size: 0.9em;
+    color: gray;
+}

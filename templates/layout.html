@@ -8,20 +8,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
-    <!-- Header with Project Title, Net Worth Indicator, and Navigation -->
     <header>
         <div class="header-content">
             <div class="header-left">
                 <h1>Net Worth Tracker</h1>
             </div>
             <div class="header-right">
-                {% if net_worth_change > 0 %}
-                    <p class="net-worth-change positive">📈 +${{ "{:,.2f}".format(net_worth_change) }}</p>
-                {% elif net_worth_change < 0 %}
-                    <p class="net-worth-change negative">📉 -${{ "{:,.2f}".format(abs(net_worth_change)) }}</p>
-                {% else %}
-                    <p class="net-worth-change neutral">No change</p>
-                {% endif %}
+                <!-- Display total net worth with the change in brackets like a stock quote -->
+                <p class="total-net-worth">
+                    Total Net Worth: ${{ "{:,.2f}".format(total_net_worth) }}
+                    <span class="net-worth-change">
+                        {% if net_worth_change > 0 %}
+                            (+${{ "{:,.2f}".format(net_worth_change) }})
+                        {% elif net_worth_change < 0 %}
+                            (-${{ "{:,.2f}".format(abs(net_worth_change)) }})
+                        {% else %}
+                            (No change)
+                        {% endif %}
+                    </span>
+                </p>
             </div>
         </div>
 
@@ -32,17 +37,14 @@
         </nav>
     </header>
 
-    <!-- Main Content Area -->
     <main>
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer Section -->
     <footer>
         <p>&copy; {{ current_year }} Net Worth Tracker. Manage your finances with ease.</p>
     </footer>
 
-    <!-- Custom Scripts -->
     {% block scripts %}{% endblock %}
 </body>
 </html>
