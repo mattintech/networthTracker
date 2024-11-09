@@ -6,11 +6,18 @@
     font-family: Arial, sans-serif;
 }
 
-body {
-    padding: 20px;
-    background-color: #f4f7fa;
+html, body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #eef3f9; /* Light blue-toned background */
     color: #333;
 }
+
+main {
+    flex: 1;            /* Allows the main content to expand and push footer down */
+}
+
 
 h2 {
     color: #333;
@@ -43,7 +50,7 @@ input, select, button {
 }
 
 button {
-    background-color: #4CAF50;
+    background-color: #1e90ff; /* Dodger Blue */
     color: white;
     border: none;
     cursor: pointer;
@@ -51,7 +58,7 @@ button {
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #1c86e4; /* Slightly darker blue */
 }
 
 table {
@@ -105,13 +112,12 @@ th {
 }
 
 /* Header Layout */
-/* Header Layout */
 header {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-color: #4CAF50;
+    background-color: #1e90ff; /* Dodger Blue for the header */
     color: white;
     margin-bottom: 20px;
 }
@@ -121,7 +127,7 @@ header {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 1200px; /* Ensures content stays centered on larger screens */
+    max-width: 1200px;
     position: relative;
 }
 
@@ -144,11 +150,11 @@ header {
 }
 
 .net-worth-change.positive {
-    color: lightgreen;
+    color: #00bfa5; /* Teal for positive */
 }
 
 .net-worth-change.negative {
-    color: salmon;
+    color: #ff5a5f; /* Coral red for negative */
 }
 
 .net-worth-change.neutral {
@@ -170,7 +176,6 @@ header nav a {
 header nav a:hover {
     text-decoration: underline;
 }
-
 
 footer {
     text-align: center;
@@ -195,4 +200,22 @@ footer p {
 .net-worth-change {
     font-size: 0.9em;
     color: gray;
+}
+
+/* Chart Styling */
+#netWorthChart {
+    width: 100%;            /* Full width of the container */
+    height: auto;           /* Adjust height automatically */
+    max-height: 60vh;       /* Maximum height of 60% of the viewport height */
+    aspect-ratio: 16 / 9;   /* Set aspect ratio to control width-height proportion */
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #netWorthChart {
+        max-height: 50vh;   /* Slightly reduce max-height on smaller screens */
+        padding: 5px;
+    }
 }
