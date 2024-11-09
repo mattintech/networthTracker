@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Accounts</h2>
+
+<!-- Form to add new account -->
+<form method="post">
+    <input type="hidden" name="account_id" id="account_id" value="">
+    
+    <label>Name: <input type="text" name="name" id="name" required></label><br>
+    <label>Type: <input type="text" name="type" id="type" required></label><br>
+    <label>Institution: <input type="text" name="institution" id="institution" required></label><br>
+    
+    <label>Owner:
+        <select name="owner" id="owner" required>
+            <option value="Matt">Matt</option>
+            <option value="Alex">Alex</option>
+        </select>
+    </label><br>
+    
+    <label>Account Number: <input type="text" name="account_number" id="account_number" required></label><br>
+    
+    <label>Color: <input type="color" name="line_color" id="line_color" value="#FFFFFF" required></label><br>
+
+    <button type="submit" id="submit_button">Add Account</button>
+</form>
+
+<h3>Existing Accounts</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Institution</th>
+            <th>Owner</th>
+            <th>Account Number</th>
+            <th>Color</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for account in accounts %}
+            <tr>
+                <td>{{ account.name }}</td>
+                <td>{{ account.type }}</td>
+                <td>{{ account.institution }}</td>
+                <td>{{ account.owner }}</td>
+                <td>{{ account.account_number }}</td>
+                <td style="background-color: {{ account.line_color }};">{{ account.line_color }}</td>
+                <td>
+                    <!-- Edit button to fill form with account data for inline editing -->
+                    <button type="button" onclick="editAccount({{ account.id }}, '{{ account.name }}', '{{ account.type }}', '{{ account.institution }}', '{{ account.owner }}', '{{ account.account_number }}', '{{ account.line_color }}')">Edit</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function editAccount(id, name, type, institution, owner, accountNumber, lineColor) {
+        // Fill the form with the account's current details
+        document.getElementById('account_id').value = id;
+        document.getElementById('name').value = name;
+        document.getElementById('type').value = type;
+        document.getElementById('institution').value = institution;
+        document.getElementById('owner').value = owner;
+        document.getElementById('account_number').value = accountNumber;
+        document.getElementById('line_color').value = lineColor;
+
+        // Change the submit button text to indicate edit mode
+        document.getElementById('submit_button').textContent = 'Update Account';
+    }
+</script>
+{% endblock %}

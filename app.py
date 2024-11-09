@@ -83,24 +83,42 @@ def summary():
 
     return render_template('summary.html', accounts=accounts_data, account_values=account_values_data)
 
-@app.route('/add_account', methods=['GET', 'POST'])
-def add_account():
+@app.route('/accounts', methods=['GET', 'POST'])
+def accounts():
     if request.method == 'POST':
-        name = request.form['name']
-        type_ = request.form['type']
-        institution = request.form['institution']
-        owner = request.form['owner']
-        account_number = request.form['account_number']
-        line_color = request.form['line_color']
-        #background_color = request.form['background_color']
-        
-        new_account = Account(name=name, type=type_, institution=institution, owner=owner,
-                              account_number=account_number, line_color=line_color) #, background_color=background_color)
-        db.session.add(new_account)
-        db.session.commit()
-        flash('Account added successfully')
-        return redirect(url_for('summary'))
-    return render_template('add_account.html')
+        # Check if we're adding a new account or updating an existing one
+        account_id = request.form.get('account_id')
+        if account_id:
+            # Update existing account
+            account = Account.query.filter_by(id=account_id).first()  # Updated line
+            if account:
+                account.name = request.form['name']
+                account.type = request.form['type']
+                account.institution = request.form['institution']
+                account.owner = request.form['owner']
+                account.account_number = request.form['account_number']
+                account.line_color = request.form['line_color']
+                db.session.commit()
+                flash('Account updated successfully')
+        else:
+            # Add a new account
+            name = request.form['name']
+            type_ = request.form['type']
+            institution = request.form['institution']
+            owner = request.form['owner']
+            account_number = request.form['account_number']
+            line_color = request.form['line_color']
+            
+            new_account = Account(name=name, type=type_, institution=institution, owner=owner,
+                                  account_number=account_number, line_color=line_color)
+            db.session.add(new_account)
+            db.session.commit()
+            flash('Account added successfully')
+        return redirect(url_for('accounts'))
+
+    # Retrieve all accounts to display in the table
+    accounts = Account.query.all()
+    return render_template('accounts.html', accounts=accounts)
 
 @app.route('/add_value', methods=['GET', 'POST'])
 def add_value():
