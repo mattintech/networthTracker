@@ -120,25 +120,47 @@ def accounts():
     accounts = Account.query.all()
     return render_template('accounts.html', accounts=accounts)
 
-@app.route('/add_value', methods=['GET', 'POST'])
-def add_value():
+@app.route('/values', methods=['GET', 'POST'])
+def values():
     accounts = Account.query.all()
+    
     if request.method == 'POST':
-        account_id = request.form['account_id']
+        account_value_id = request.form.get('account_value_id')
+        account_id = request.form.get('account_id_hidden') or request.form.get('account_id')  # Check hidden field first
         date = datetime.strptime(request.form['date'], '%Y-%m-%d').date()
         value = float(request.form['value'])
         
-        # Check for duplicate entry
-        existing_value = AccountValue.query.filter_by(account_id=account_id, date=date).first()
-        if existing_value:
-            flash('Value for this account and month already exists.')
+        # Debugging output
+        print("Form Data - account_value_id:", account_value_id)
+        print("Form Data - account_id:", account_id)
+        print("Form Data - date:", date)
+        print("Form Data - value:", value)
+        
+        if account_value_id:
+            # Update existing account value (only date and value)
+            account_value = AccountValue.query.filter_by(id=account_value_id).first()
+            if account_value:
+                print("Updating account value with ID:", account_value_id)
+                account_value.date = date
+                account_value.value = value
+                db.session.commit()
+                flash('Value updated successfully')
+            else:
+                print("No account value found with ID:", account_value_id)
         else:
-            new_value = AccountValue(account_id=account_id, date=date, value=value)
-            db.session.add(new_value)
-            db.session.commit()
-            flash('Value added successfully')
-        return redirect(url_for('summary'))
-    return render_template('add_value.html', accounts=accounts)
+            # Add a new value if no ID is provided
+            existing_value = AccountValue.query.filter_by(account_id=account_id, date=date).first()
+            if existing_value:
+                flash('Value for this account and month already exists.')
+            else:
+                new_value = AccountValue(account_id=account_id, date=date, value=value)
+                db.session.add(new_value)
+                db.session.commit()
+                flash('Value added successfully')
+        return redirect(url_for('values'))
+
+    return render_template('values.html', accounts=accounts)
+
 
 @app.route('/get_account_values')
 def get_account_values():
@@ -147,16 +169,17 @@ def get_account_values():
     
     # Prepare data as JSON
     account_values_data = [{
+        "id": value.id,  # This is the account_value_id
+        "account_id": value.account.id,  # Ensure account_id is provided here
         "account_name": value.account.name,
         "account_number": value.account.account_number,
         "institution": value.account.institution,
         "owner": value.account.owner,
         "value": f"${value.value:,.2f}",  # Format as dollar amount with two decimal places
-        "date": value.date.isoformat()  # Move date to the end
+        "date": value.date.isoformat()
     } for value in account_values]
     
     return jsonify(account_values_data)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
