@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, redirect
 from config import DevelopmentConfig, ProductionConfig
 import models
 from routes.accounts import accounts_bp
@@ -20,6 +20,10 @@ app.register_blueprint(values_bp, url_prefix='/values')
 
 # Context processor for net worth calculation
 app.context_processor(inject_net_worth)
+
+@app.route('/')
+def index():
+    return redirect('/summary')
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=8080)
