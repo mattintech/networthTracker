@@ -12,19 +12,102 @@ html, body {
     flex-direction: column;
     background-color: #eef3f9; /* Light blue-toned background */
     color: #333;
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 main {
-    flex: 1;            /* Allows the main content to expand and push footer down */
+    flex: 1;
+    width: 100%; /* Make sure main content fills the width */
+    padding: 0 10px;
 }
 
+/* Ensure header/footer take the full viewport width without any outer spacing */
+body, header, footer {
+    margin: 0;
+    padding: 0;
+}
 
-h2 {
-    color: #333;
+/* Header Layout */
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background-color: #1e90ff; /* Dodger Blue for the header */
+    color: white;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.header-left h1 {
+    margin: 0;
     font-size: 1.8em;
-    margin-bottom: 1rem;
 }
 
+.header-right {
+    font-size: 1.2em;
+    margin-top: 5px;
+}
+
+.header-left,
+.header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Responsive Header Layout for larger screens */
+@media (min-width: 768px) {
+    .header-content {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .header-left h1 {
+        font-size: 2em;
+    }
+    #netWorthChart {
+        max-width: 100%;     /* Allow the chart to shrink to container width on smaller screens */
+        max-height: 50vh;
+    }
+}
+
+/* Navigation Styles */
+header nav {
+    margin-top: 10px;
+}
+
+header nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+header nav a:hover {
+    text-decoration: underline;
+}
+
+/* Net Worth Styling */
+.total-net-worth {
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+.net-worth-change {
+    font-size: 0.9em;
+    color: gray;
+}
+
+/* Form and Table Styling */
 form, table {
     background: white;
     padding: 15px;
@@ -58,7 +141,7 @@ button {
 }
 
 button:hover {
-    background-color: #1c86e4; /* Slightly darker blue */
+    background-color: #1c86e4;
 }
 
 table {
@@ -77,10 +160,34 @@ th {
     background-color: #f4f4f4;
 }
 
-/* Responsive Design */
+/* Footer */
+footer {
+    text-align: center;
+    padding: 15px;
+    background-color: #333;
+    color: white;
+    width: 100%;
+}
+
+footer p {
+    margin: 0;
+    font-size: 1em;
+}
+
+/* Chart Styling */
+#netWorthChart {
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    aspect-ratio: 16 / 9;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* Responsive adjustments for mobile and tablet */
 @media (max-width: 768px) {
     body {
-        padding: 10px;
+        padding: 0;
     }
 
     h2 {
@@ -92,12 +199,17 @@ th {
         max-width: 100%;
     }
 
-    label {
-        font-size: 1em;
+    .header-left h1 {
+        font-size: 1.5em;
     }
 
-    input, select, button {
-        font-size: 1em;
+    .total-net-worth {
+        font-size: 1.2em;
+    }
+
+    #netWorthChart {
+        max-height: 50vh;
+        padding: 5px;
     }
 }
 
@@ -109,113 +221,12 @@ th {
     form, table {
         padding: 8px;
     }
-}
 
-/* Header Layout */
-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background-color: #1e90ff; /* Dodger Blue for the header */
-    color: white;
-    margin-bottom: 20px;
-}
+    .header-left h1 {
+        font-size: 1.3em;
+    }
 
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px;
-    position: relative;
-}
-
-.header-left h1 {
-    margin: 0;
-    font-size: 2em;
-}
-
-.header-right {
-    position: absolute;
-    top: 0;
-    right: 0;
-}
-
-/* Net Worth Change Styling */
-.net-worth-change {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-top: 8px;
-}
-
-.net-worth-change.positive {
-    color: #00bfa5; /* Teal for positive */
-}
-
-.net-worth-change.negative {
-    color: #ff5a5f; /* Coral red for negative */
-}
-
-.net-worth-change.neutral {
-    color: gray;
-}
-
-/* Navigation Styles */
-header nav {
-    margin-top: 15px;
-}
-
-header nav a {
-    color: white;
-    text-decoration: none;
-    margin: 0 15px;
-    font-weight: bold;
-}
-
-header nav a:hover {
-    text-decoration: underline;
-}
-
-footer {
-    text-align: center;
-    padding: 15px;
-    background-color: #333;
-    color: white;
-    margin-top: 20px;
-}
-
-footer p {
-    margin: 0;
-    font-size: 1em;
-}
-
-/* Net Worth Styling */
-.total-net-worth {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-top: 8px;
-}
-
-.net-worth-change {
-    font-size: 0.9em;
-    color: gray;
-}
-
-/* Chart Styling */
-#netWorthChart {
-    width: 100%;            /* Full width of the container */
-    height: auto;           /* Adjust height automatically */
-    max-height: 60vh;       /* Maximum height of 60% of the viewport height */
-    aspect-ratio: 16 / 9;   /* Set aspect ratio to control width-height proportion */
-    margin: 0 auto;
-    padding: 10px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    #netWorthChart {
-        max-height: 50vh;   /* Slightly reduce max-height on smaller screens */
-        padding: 5px;
+    .header-right {
+        font-size: 1em;
     }
 }

@@ -61,6 +61,15 @@ def values():
     # Render template with accounts for selection
     return render_template('values.html', accounts=accounts)
 
+@values_bp.route('/delete/<int:value_id>', methods=['POST'])
+def delete_value(value_id):
+    account_value = AccountValue.query.get(value_id)
+    if account_value:
+        db.session.delete(account_value)
+        db.session.commit()
+        flash('Value deleted successfully')
+    return redirect(url_for('values_bp.values'))
+
 @values_bp.route('/get_account_values')
 def get_account_values():
     # Retrieve all values sorted by date in descending order

@@ -3,7 +3,6 @@
 {% block content %}
 <h2>Values</h2>
 
-<!-- Form to add or update value -->
 <form method="post">
     <input type="hidden" name="account_value_id" id="account_value_id" value="">
     <input type="hidden" name="account_id_hidden" id="account_id_hidden" value="">
@@ -55,7 +54,7 @@
                     const row = document.createElement('tr');
                     
                     const accountCell = document.createElement('td');
-                    accountCell.textContent = `${item.account_name} - ${item.owner} (${item.account_number.slice(-4)})`;
+                    accountCell.textContent = `${item.account_name} (${item.account_number.slice(-4)})`;
                     row.appendChild(accountCell);
                     
                     const institutionCell = document.createElement('td');
@@ -75,14 +74,23 @@
                     row.appendChild(dateCell);
 
                     const actionCell = document.createElement('td');
+                    
                     const editButton = document.createElement('button');
                     editButton.textContent = 'Edit';
                     editButton.onclick = function() {
                         editValue(item.id, item.account_id, item.date, item.value);
                     };
                     actionCell.appendChild(editButton);
-                    row.appendChild(actionCell);
                     
+                    const deleteButton = document.createElement('button');
+                    deleteButton.innerHTML = 'Delete';
+                    deleteButton.style.marginLeft = '5px';
+                    deleteButton.onclick = function() {
+                        deleteValue(item.id);
+                    };
+                    actionCell.appendChild(deleteButton);
+                    
+                    row.appendChild(actionCell);
                     tableBody.appendChild(row);
                 });
             });
@@ -108,6 +116,7 @@
         // Change button text to indicate edit mode
         document.getElementById('submit_button').textContent = 'Update Value';
     }
+    
     document.addEventListener('DOMContentLoaded', loadAccountValues);
 
     document.querySelector('form').addEventListener('submit', function(event) {

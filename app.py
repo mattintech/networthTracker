@@ -1,6 +1,5 @@
 import os
 from flask import Flask
-#from flask_sqlalchemy import SQLAlchemy
 from config import DevelopmentConfig, ProductionConfig
 import models
 from routes.accounts import accounts_bp
