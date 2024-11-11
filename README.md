@@ -44,5 +44,5 @@ docker run -p 8080:8080 -e FLASK_ENV=development --name networthstracker -d regi
 When you are ready to publish
 
 ```bash
-docker push registry.mattintech.com/angeleyes-api
+docker push registry.mattintech.com/networthtracker
 ```
